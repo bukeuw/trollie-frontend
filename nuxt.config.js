@@ -27,7 +27,12 @@ export default {
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
-  components: true,
+  components: {
+    dirs: [
+      '~/components',
+      '~/components/auth'
+    ]
+  },
 
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
@@ -40,8 +45,32 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
+
+  auth: {
+    redirect: {
+      login: '/auth/login'
+    },
+    strategies: {
+      laravelJWT: {
+        provider: 'laravel/jwt',
+        url: 'http://localhost:8083',
+        token: {
+          property: 'access_token',
+          maxAge: 720 * 60
+        },
+        refreshToken: {
+          maxAge: 20160 * 60
+        }
+      }
+    }
+  },
+
+  router: {
+    middleware: ['auth']
+  },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},
