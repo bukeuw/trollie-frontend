@@ -1,7 +1,7 @@
 <template>
-  <b-card title="home">
+  <b-card title="Boards">
     <b-card-body>
-      <p>Home</p>
+      <BoardList />
     </b-card-body>
   </b-card>
 </template>
