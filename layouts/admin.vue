@@ -2,7 +2,13 @@
   <div>
     <Navbar />
     <div class="container-fluid row mt-2">
-      <nuxt />
+      <div class="col-2">
+        <Sidebar />
+      </div>
+
+      <div class="col">
+        <nuxt />
+      </div>
     </div>
   </div>
 </template>
