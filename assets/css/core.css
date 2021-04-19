@@ -1,0 +1,284 @@
+.list-wrapper {
+  width: 272px;
+  margin: 0 4px;
+  height: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.list {
+  background-color: #ebecf0;
+  border-radius: 3px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  position: relative;
+  white-space: normal;
+}
+
+.list-header {
+  flex: 0 0 auto;
+  padding: 10px 8px;
+  position: relative;
+  min-height: 20px;
+}
+
+.list-cards {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 4px;
+  padding: 0 4px;
+  z-index: 1;
+  min-height: 0;
+}
+.list-card {
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgb(9 30 66 / 25%);
+  cursor: pointer;
+  display: block;
+  margin-bottom: 8px;
+  max-width: 300px;
+  min-height: 20px;
+  position: relative;
+  text-decoration: none;
+  z-index: 0;
+}
+.list-card-detail {
+  overflow: hidden;
+  padding: 6px 8px 2px;
+  position: relative;
+  z-index: 10;
+}
+.list-card-title {
+  clear: both;
+  display: block;
+  margin: 0 0 0 4px;
+  overflow: hidden;
+  text-decoration: none;
+  word-break: break-word;
+  color: #172b4d;
+}
+.list-card-members {
+  float: right;
+  margin: 0 -2px 0 0;
+}
+.list-card-members .member {
+  height: 28px;
+  width: 28px;
+  background-color: #dfe1e6;
+  border-radius: 25em;
+  cursor: pointer;
+  display: block;
+  overflow: visible;
+  position: relative;
+  user-select: none;
+  z-index: 0;
+}
+.list-card-labels {
+  overflow: auto;
+  position: relative;
+}
+.card-label.mod-card-front {
+  float: left;
+  font-size: 12px;
+  font-weight: 700;
+  height: 8px;
+  line-height: 100px;
+  margin: 0 4px 4px 0;
+  max-width: 40px;
+  min-width: 40px;
+  padding: 0;
+  text-shadow: none;
+  width: auto;
+}
+.card-label {
+  background-color: #b3bac5;
+  border-radius: 4px;
+  color: #fff;
+  display: block;
+  margin-right: 4px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 4px 6px;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list input {
+  background-color: #ebecf0;
+  border-color: #ebecf0;
+  color: #5e6c84;
+}
+.list input:hover {
+  background-color: rgba(9, 30, 66, 0.08);
+  color: #172b4d;
+}
+.list input:focus {
+  background-color: white;
+}
+.card-form {
+  margin: 8px;
+  padding: 4px;
+}
+.list-card {
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgb(9 30 66 / 25%);
+  cursor: pointer;
+  display: block;
+  margin-bottom: 8px;
+  max-width: 300px;
+  min-height: 20px;
+  position: relative;
+  text-decoration: none;
+  z-index: 0;
+}
+.list-card-detail {
+  overflow: hidden;
+  padding: 6px 8px 2px;
+  position: relative;
+  z-index: 10;
+}
+.list-card-title {
+  clear: both;
+  display: block;
+  margin: 0 0 0 4px;
+  overflow: hidden;
+  text-decoration: none;
+  word-break: break-word;
+  color: #172b4d;
+}
+.list-card-members {
+  float: right;
+  margin: 0 -2px 0 0;
+}
+.list-card-members .member {
+  height: 28px;
+  width: 28px;
+  background-color: #dfe1e6;
+  border-radius: 25em;
+  cursor: pointer;
+  display: block;
+  overflow: visible;
+  position: relative;
+  user-select: none;
+  z-index: 0;
+}
+.list-card-labels {
+  overflow: auto;
+  position: relative;
+}
+.card-label.mod-card-front {
+  float: left;
+  font-size: 12px;
+  font-weight: 700;
+  height: 8px;
+  line-height: 100px;
+  margin: 0 4px 4px 0;
+  max-width: 40px;
+  min-width: 40px;
+  padding: 0;
+  text-shadow: none;
+  width: auto;
+}
+.card-label {
+  background-color: #b3bac5;
+  border-radius: 4px;
+  color: #fff;
+  display: block;
+  margin-right: 4px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 4px 6px;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+textarea.mod-card-back-title {
+  background: transparent;
+  border-radius: 3px;
+  box-shadow: none;
+  font-size: 20px;
+  font-weight: 600;
+  height: 32px;
+  line-height: 24px;
+  margin: -4px -8px;
+  min-height: 24px;
+  padding: 4px 8px;
+  resize: none;
+}
+textarea.mod-card-back-title:focus {
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px #0079bf;
+}
+textarea.mod-card-description {
+  background-color: rgba(9,30,66,0.04);
+  box-shadow: none;
+  border: none;
+  border-radius: 3px;
+  display: 40px;
+  padding: 8px 12px;
+  text-decoration: none;
+  resize: none;
+}
+textarea.mod-card-description.is-edited,
+textarea.mod-card-description:focus {
+  min-height: 108px;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.modal-content {
+  background-color: #f4f5f7;
+}
+textarea {
+  outline: none;
+  border: none;
+  box-shadow: inset 0 0 0 2px #dfe1e6;
+  background-color: #fafbfc;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  display: block;
+  line-height: 20px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  color: #172b4d;
+  width: 100%;
+}
+.label-green { background-color: #61bd4f; }
+.label-yellow { background-color: #f2d600; }
+.label-orange { background-color: #ff9f1a; }
+.label-red { background-color: #eb5a46; }
+.label-purple { background-color: #c377e0; }
+.label-blue { background-color: #0079bf; }
+.label-sky { background-color: #00c2e0; }
+.label-lime { background-color: #51e898; }
+.label-pink { background-color: #ff78cb; }
+.label-black { background-color: #344563; }
+
+.trollie-link-budefault {
+  background-color: rgba(9,30,66,.04);
+  border: none;
+  color: #172b4d;
+}
+.trollie-link-button:hover {
+  background-color: rgba(9,30,66,.08);
+  color: #172b4d;
+}
+.card-label.mod-clickable {
+  cursor: pointer;
+}
+.card-label.mod-edit-label {
+  float: left;
+  height: 34px;
+  margin: 0 8px 8px 0;
+  padding: 0;
+  width: 48px;
+}
