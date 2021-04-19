@@ -17,7 +17,10 @@
           :list="list"
         />
 
-        <List is-form :form-action="addList" />
+        <List
+          is-form
+          :form-action="addList"
+        />
       </b-card-body>
     </b-card>
   </div>
@@ -73,7 +76,7 @@ export default {
         title,
         board_id: boardId
       }
-      this.$axios.$post('/api/lists', data)
+      return this.$axios.$post('/api/lists', data)
         .then(() => {
           this.$fetch()
         })
