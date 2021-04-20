@@ -1,10 +1,49 @@
 <template>
-  <div class="list-card" @click="showCardDetail">
-    <div class="list-card-detail">
+  <div :id="cardId" class="list-card">
+    <i :id="'btn-' + cardId" ref="button" class="fa fa-pen list-card-action" />
+
+    <div class="list-card-detail" @click="showCardDetail">
       <div class="list-card-header">
         <p>{{ card.title }}</p>
       </div>
     </div>
+
+    <b-popover
+      ref="popover"
+      :target="'btn-' + cardId"
+      triggers="click"
+      :show.sync="popoverShow"
+      placement="auto"
+      @show="onShow"
+    >
+      <template #title>
+        <b-button class="close" aria-label="Close" @click="closePopover">
+          <span class="d-inline-block" aria-hidden="true">&times;</span>
+        </b-button>
+        Card menu
+      </template>
+
+      <div>
+        <div class="form-group">
+          <label for="list-select">Move card to</label>
+          <b-form-select
+            id="list-select"
+            v-model="listForm.listId"
+            :options="lists"
+            text-field="title"
+            value-field="id"
+            size="sm"
+          />
+        </div>
+
+        <b-button size="sm" variant="danger" @click="closePopover">
+          Cancel
+        </b-button>
+        <b-button size="sm" variant="primary" @click="moveCard">
+          Ok
+        </b-button>
+      </div>
+    </b-popover>
 
     <b-modal
       :id="`card-detail-modal${card.id}`"
@@ -153,6 +192,11 @@ export default {
   fetchOnServer: false,
   data () {
     return {
+      lists: [],
+      listForm: {
+        listId: null
+      },
+      popoverShow: false,
       cardDetail: {
         title: '',
         description: ''
@@ -177,9 +221,16 @@ export default {
       labelColor: ''
     }
   },
+  computed: {
+    cardId () {
+      return `card${this.cardDetail.id}`
+    }
+  },
   methods: {
     fetchCardDetail () {
       this.cardDetail = this.card
+      this.lists = window.lists
+        .filter(list => list.id !== this.cardDetail.list_id)
     },
 
     saveCardDetail () {
@@ -283,6 +334,35 @@ export default {
 
     hasLabel (labelId) {
       return this.cardLabels.some(label => label.id === labelId)
+    },
+
+    closePopover () {
+      this.popoverShow = false
+    },
+
+    moveCard () {
+      const { listId } = this.listForm
+      const cardId = this.cardDetail.id
+      const data = {
+        list_id: listId
+      }
+
+      this.$axios.$patch(`/api/cards/${cardId}`, data)
+        .then(() => {
+          this.popoverShow = false
+          this.$emit('card-moved')
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot move card: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
+    },
+
+    onShow () {
+      this.listForm.listId = null
     }
   }
 }

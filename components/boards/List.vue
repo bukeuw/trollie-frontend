@@ -22,6 +22,7 @@
             v-for="card in cards"
             :key="card.id"
             :card="card"
+            @card-moved="cardMoved"
           />
 
           <div class="card-form">
@@ -52,6 +53,10 @@ export default {
       default: false
     },
     formAction: {
+      type: Function,
+      default: () => {}
+    },
+    cardMoved: {
       type: Function,
       default: () => {}
     }

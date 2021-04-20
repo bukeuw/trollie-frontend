@@ -10,11 +10,12 @@
       v-else
       :title="board.title"
     >
-      <b-card-body>
+      <b-card-body class="lists">
         <List
           v-for="list in lists"
           :key="list.id"
           :list="list"
+          :card-moved="cardMoved"
         />
 
         <List
@@ -60,6 +61,7 @@ export default {
       this.$axios.$get(`/api/lists?board_id=${boardId}`)
         .then((listsJson) => {
           this.lists = listsJson.data
+          window.lists = listsJson.data
         })
         .catch((err) => {
           this.$bvToast.toast(`Failed to fetch list: ${err}`, {
@@ -87,6 +89,10 @@ export default {
             solid: true
           })
         })
+    },
+
+    cardMoved () {
+      this.$fetch()
     }
   }
 }
