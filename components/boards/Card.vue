@@ -86,12 +86,13 @@
             </div>
 
             <div class="form-group">
-              <div class="card-labels row">
+              <div class="card-labels row m-0">
                 <span
                   v-for="label in cardLabels"
                   :key="label.id"
                   class="card-label col"
                   :class="label.color_classes"
+                  :title="label.title"
                 >
                   {{ label.title }}
                 </span>
