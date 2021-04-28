@@ -26,6 +26,7 @@ export default {
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
+    '~/plugins/pusher'
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
@@ -83,12 +84,13 @@ export default {
   publicRuntimeConfig: {
     axios: {
       browserBaseURL: process.env.BROWSER_BASE_URL
-    }
-  },
+    },
 
-  privateRuntimeConfig: {
-    axios: {
-      baseURL: process.env.BASE_URL
+    pusher: {
+      appId: process.env.PUSHER_APP_ID,
+      key: process.env.PUSHER_KEY,
+      secret: process.env.PUSHER_SECRET,
+      cluster: process.env.PUSHER_CLUSTER
     }
   },
 
