@@ -107,7 +107,7 @@
             no-caret
             block
           >
-            <template slot="button-content">
+            <template #button-content>
               <i class="fa fa-tag" />
               Label
             </template>
@@ -173,6 +173,59 @@
               </div>
             </b-dropdown-form>
           </b-dropdown>
+
+          <b-dropdown
+            size="sm"
+            toggle-class="text-left trollie-link-button mt-2"
+            no-caret
+            block
+          >
+            <template #button-content>
+              <i class="fa fa-clock" />
+              Due Date
+            </template>
+
+            <b-dropdown-form class="p-0" @submit.prevent="addDueDate(card)">
+              <div class="form-group">
+                <b-calendar v-model="dueDateForm.date" />
+              </div>
+
+              <div class="form-group row">
+                <input
+                  v-model="dueDateForm.date"
+                  type="date"
+                  class="form-control col"
+                >
+                <input
+                  v-model="dueDateForm.time"
+                  type="time"
+                  class="form-control col"
+                  :hour12="false"
+                >
+              </div>
+
+              <div class="form-group">
+                <b-button type="submit" variant="success" size="sm" block>
+                  Save
+                </b-button>
+              </div>
+
+              <div class="form-group">
+                <b-button
+                  variant="secondary"
+                  size="sm"
+                  block
+                  :disabled="!cardDetail.due_date"
+                  @click="removeDueDate(card)"
+                >
+                  Remove
+                </b-button>
+              </div>
+            </b-dropdown-form>
+          </b-dropdown>
+          <p v-if="cardDetail.due_date">
+            {{ cardDetail.due_date }}
+          </p>
         </div>
       </div>
     </b-modal>
@@ -187,8 +240,8 @@ export default {
       required: true
     }
   },
-  fetch () {
-    this.fetchCardDetail()
+  async fetch () {
+    await this.fetchCardDetail()
   },
   fetchOnServer: false,
   data () {
@@ -219,7 +272,11 @@ export default {
         'label-default'
       ],
       labelTitle: '',
-      labelColor: ''
+      labelColor: '',
+      dueDateForm: {
+        date: '',
+        time: ''
+      }
     }
   },
   computed: {
@@ -229,13 +286,23 @@ export default {
   },
   methods: {
     fetchCardDetail () {
-      this.cardDetail = this.card
-      this.lists = window.lists
-        .filter(list => list.id !== this.cardDetail.list_id)
+      return this.$axios.$get(`/api/cards/${this.card.id}`)
+        .then((cardJson) => {
+          this.cardDetail = cardJson.data
+          this.lists = window.lists
+            .filter(list => list.id !== this.cardDetail.list_id)
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot get card detail: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
     },
 
     saveCardDetail () {
-      const cardId = this.cardDetail.id
+      const cardId = this.card.id
       const data = {
         title: this.cardDetail.title,
         description: this.cardDetail.description
@@ -269,7 +336,7 @@ export default {
     },
 
     fetchCardLabels () {
-      const cardId = this.cardDetail.id
+      const cardId = this.card.id
       this.$axios.$get(`/api/statuses?card_id=${cardId}`)
         .then((labelsJson) => {
           this.cardLabels = labelsJson.data
@@ -284,7 +351,7 @@ export default {
     },
 
     toggleLabel (labelId) {
-      const cardId = this.cardDetail.id
+      const cardId = this.card.id
       const data = {
         card_id: cardId,
         status_id: labelId
@@ -364,6 +431,46 @@ export default {
 
     onShow () {
       this.listForm.listId = null
+    },
+
+    addDueDate (card) {
+      const { time, date } = this.dueDateForm
+      const data = {
+        due_date: `${date} ${time}`
+      }
+
+      return this.$axios.$post(`/api/cards/${card.id}/due-date`, data)
+        .then(() => {
+          this.$fetch()
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot add due date: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
+    },
+
+    removeDueDate (card) {
+      return this.$axios.$delete(`/api/cards/${card.id}/due-date`)
+        .then(() => {
+          this.$fetch()
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot add due date: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
+    },
+
+    clearDueDateForm () {
+      this.dueDateForm = {
+        date: '',
+        time: ''
+      }
     }
   }
 }
