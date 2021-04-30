@@ -64,22 +64,6 @@
   word-break: break-word;
   color: #172b4d;
 }
-.list-card-members {
-  float: right;
-  margin: 0 -2px 0 0;
-}
-.list-card-members .member {
-  height: 28px;
-  width: 28px;
-  background-color: #dfe1e6;
-  border-radius: 25em;
-  cursor: pointer;
-  display: block;
-  overflow: visible;
-  position: relative;
-  user-select: none;
-  z-index: 0;
-}
 .list-card-labels {
   overflow: auto;
   position: relative;
@@ -155,12 +139,13 @@
   color: #172b4d;
 }
 .list-card-members {
-  float: right;
-  margin: 0 -2px 0 0;
+  margin: 0 8px 8px 0;
+  display: flex;
 }
-.list-card-members .member {
-  height: 28px;
-  width: 28px;
+.list-card-members .member,
+.list-card-members .add-member-button {
+  height: 32px;
+  width: 32px;
   background-color: #dfe1e6;
   border-radius: 25em;
   cursor: pointer;
@@ -169,6 +154,22 @@
   position: relative;
   user-select: none;
   z-index: 0;
+}
+.list-card-members .member:nth-child(even) {
+  background-color: #ff9b1e;
+}
+.member-initials {
+	display: block;
+	font-size: 12px;
+	font-weight: 700;
+	height: 32px;
+	left: 0;
+	line-height: 32px;
+	overflow: hidden;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	width: 100%;
 }
 .list-card-labels {
   overflow: auto;
