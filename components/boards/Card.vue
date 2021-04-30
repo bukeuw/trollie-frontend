@@ -56,6 +56,40 @@
           <div class="form-group">
             <textarea v-model="cardDetail.title" class="mod-card-back-title" />
           </div>
+
+          <div class="form-group">
+            <p>Members</p>
+            <div class="list-card-members">
+              <div
+                v-for="user in cardUsers"
+                :key="user.id"
+                b-v-tooltip
+                class="member"
+                :title="user.name"
+              >
+                <div class="member-initials">
+                  {{ getUserInitials(user.name) }}
+                </div>
+              </div>
+
+              <div class="add-member-button">
+                <div
+                  class="member-initials"
+                  b-v-tooltip
+                  title="Add member"
+                >
+                  <i class="fa fa-plus" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <p v-if="cardDetail.due_date">
+              Due in: {{ cardDetail.due_date | distance }} at {{ cardDetail.due_date | timeFormat }}
+            </p>
+          </div>
+
           <div class="form-group">
             <label
               class="control-label"
@@ -101,9 +135,41 @@
           </div>
         </div>
         <div class="col-3">
+          <b-button
+            v-if="!amIMember()"
+            class="text-left trollie-link-button"
+            size="sm"
+            block
+            @click="toggleMembership($auth.user.id)"
+          >
+            <i class="fa fa-user" />
+            Join
+          </b-button>
+
           <b-dropdown
             size="sm"
-            toggle-class="text-left trollie-link-button"
+            toggle-class="text-left trollie-link-button mt-2"
+            no-caret
+            block
+          >
+            <template #button-content>
+              <i class="fa fa-user" />
+              Members
+            </template>
+
+            <b-dropdown-item
+              v-for="user in users"
+              :key="user.id"
+              @click="toggleMembership(user.id)"
+            >
+              <i v-if="isMember(user.id)" class="fa fa-check" />
+              {{ user.name }}
+            </b-dropdown-item>
+          </b-dropdown>
+
+          <b-dropdown
+            size="sm"
+            toggle-class="text-left trollie-link-button mt-2"
             no-caret
             block
           >
@@ -223,9 +289,6 @@
               </div>
             </b-dropdown-form>
           </b-dropdown>
-          <p v-if="cardDetail.due_date">
-            {{ cardDetail.due_date }}
-          </p>
         </div>
       </div>
     </b-modal>
@@ -233,19 +296,46 @@
 </template>
 
 <script>
+import { format, formatDistanceToNow } from 'date-fns'
+
 export default {
+  filters: {
+    dateFormat (value) {
+      if (value) {
+        return format(new Date(value), 'ccc, dd MMM yyyy')
+      }
+
+      return ''
+    },
+    timeFormat (value) {
+      if (value) {
+        return format(new Date(value), 'HH:mm')
+      }
+
+      return ''
+    },
+    distance (value) {
+      if (value) {
+        return formatDistanceToNow(new Date(value))
+      }
+
+      return ''
+    }
+  },
   props: {
     card: {
       type: Object,
       required: true
     }
   },
-  async fetch () {
-    await this.fetchCardDetail()
+  fetch () {
+    this.cardDetail = this.card
   },
   fetchOnServer: false,
   data () {
     return {
+      users: [],
+      cardUsers: [],
       lists: [],
       listForm: {
         listId: null
@@ -289,8 +379,7 @@ export default {
       return this.$axios.$get(`/api/cards/${this.card.id}`)
         .then((cardJson) => {
           this.cardDetail = cardJson.data
-          this.lists = window.lists
-            .filter(list => list.id !== this.cardDetail.list_id)
+          this.cardUsers = this.cardDetail.users
         })
         .catch((err) => {
           this.$bvToast.toast(`Cannot get card detail: ${err}`, {
@@ -394,9 +483,17 @@ export default {
       this.labelColor = ''
     },
 
-    showCardDetail () {
-      this.fetchLabels()
-      this.fetchCardLabels()
+    fetchCardData () {
+      return Promise.all([
+        this.fetchCardDetail(),
+        this.fetchUsers(),
+        this.fetchLabels(),
+        this.fetchCardLabels()
+      ])
+    },
+
+    async showCardDetail () {
+      await this.fetchCardData()
       this.$bvModal.show(`card-detail-modal${this.card.id}`)
     },
 
@@ -411,6 +508,7 @@ export default {
     moveCard () {
       const { listId } = this.listForm
       const cardId = this.cardDetail.id
+      const oldListId = this.cardDetail.list_id
       const data = {
         list_id: listId
       }
@@ -419,6 +517,11 @@ export default {
         .then(() => {
           this.popoverShow = false
           this.$emit('card-moved')
+          this.$channel.trigger('client-card-moved', {
+            cardId,
+            from: oldListId,
+            to: listId
+          })
         })
         .catch((err) => {
           this.$bvToast.toast(`Cannot move card: ${err}`, {
@@ -431,6 +534,8 @@ export default {
 
     onShow () {
       this.listForm.listId = null
+      this.lists = window.lists
+        .filter(list => list.id !== this.cardDetail.list_id)
     },
 
     addDueDate (card) {
@@ -441,7 +546,7 @@ export default {
 
       return this.$axios.$post(`/api/cards/${card.id}/due-date`, data)
         .then(() => {
-          this.$fetch()
+          this.fetchCardData()
         })
         .catch((err) => {
           this.$bvToast.toast(`Cannot add due date: ${err}`, {
@@ -455,7 +560,7 @@ export default {
     removeDueDate (card) {
       return this.$axios.$delete(`/api/cards/${card.id}/due-date`)
         .then(() => {
-          this.$fetch()
+          this.fetchCardData()
         })
         .catch((err) => {
           this.$bvToast.toast(`Cannot add due date: ${err}`, {
@@ -471,6 +576,59 @@ export default {
         date: '',
         time: ''
       }
+    },
+
+    fetchUsers () {
+      return this.$axios.$get('/api/users')
+        .then((usersJson) => {
+          this.users = usersJson.data
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot fetch users: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
+    },
+
+    toggleMembership (userId) {
+      const data = {
+        user_id: userId
+      }
+      return this.$axios.$post(`/api/cards/${this.cardDetail.id}/membership`, data)
+        .then(() => {
+          this.fetchCardData()
+        })
+        .catch((err) => {
+          this.$bvToast.toast(`Cannot change membership: ${err}`, {
+            title: 'error',
+            variant: 'danger',
+            solid: true
+          })
+        })
+    },
+
+    amIMember () {
+      const currentUserId = this.$auth.user.id
+      return this.cardUsers.some(user => user.id === currentUserId)
+    },
+
+    isMember (userId) {
+      return this.cardUsers.some(user => user.id === userId)
+    },
+
+    getUserInitials (username) {
+      const isMoreThanOneWord = username.split(' ').length > 1
+
+      if (isMoreThanOneWord) {
+        const [firstName, lastName] = username.split(' ')
+        const initial = firstName[0] + lastName[0]
+
+        return initial.toUpperCase()
+      }
+
+      return username[0].toUpperCase()
     }
   }
 }

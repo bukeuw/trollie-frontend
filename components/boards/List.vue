@@ -64,6 +64,10 @@ export default {
   fetch () {
     if (!this.isForm) {
       this.fetchCards()
+
+      this.$channel.bind('client-card-moved', (data) => {
+        this.fetchCards()
+      })
     }
   },
   fetchOnServer: false,
